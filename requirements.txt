@@ -1,0 +1,6 @@
+cmake==3.17.2
+colorzero==1.1
+dlib==19.16.0
+gpiozero==1.5.1
+numpy==1.14.2
+opencv-python==4.2.0.34
