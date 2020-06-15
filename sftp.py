@@ -39,6 +39,24 @@ class SFTP:
         """
         self.sftp_connection.mkdir(sftp_dir)
 
+    def list_dir(self, sftp_dir):
+        """
+        Get list of directory
+
+        :param sftp_dir:
+        :return:
+        """
+        return self.sftp_connection.listdir(sftp_dir)
+
+    def copy_sftp_to_local(self, sftp_file, local_file):
+        """
+        Copy file from SFTP to local filesystem
+
+        :param sftp_file:
+        :param local_file:
+        :return:
+        """
+        self.sftp_connection.get(sftp_file, local_file)
 
 sftp = SFTP()
 
