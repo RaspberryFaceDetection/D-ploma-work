@@ -8,9 +8,9 @@ import time
 from gpiozero import MotionSensor
 
 from settings import settings
-
-# pir = MotionSensor(settings.CONFIG['MOTION_SENSOR_PIN'])
 from sftp import sftp
+
+pir = MotionSensor(settings.CONFIG['MOTION_SENSOR_PIN'])
 
 
 def motion_detected() -> bool:
@@ -21,7 +21,7 @@ def motion_detected() -> bool:
     """
 
     while True:
-        # pir.wait_for_motion()
+        pir.wait_for_motion()
         return True
 
 
