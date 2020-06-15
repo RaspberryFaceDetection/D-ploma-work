@@ -5,28 +5,39 @@ import argparse
 
 
 def save_image(file, person_name, detect_faces, predictor, face_rec):
-    # Grab a single frame from a file
+    """
+    Save image
+
+    :param file: file name
+    :param person_name: person name
+    :param detect_faces: detect faces
+    :param predictor: predictor
+    :param face_rec: face recognition
+    :return:
+    """
     frame = cv2.imread(file)
 
-    # Find all the faces and face encodings in the frame
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = detect_faces.detectMultiScale(gray, 1.3, 5)
     face_locations = []
     for (x, y, w, h) in faces:
         face_locations.append(dlib.rectangle(x, y, x + w, y + h))
 
-    # If there is at least 1 face then do face recognition
     if 0 < len(face_locations) < 2:
         for face_location in face_locations:
             face_encoding = predictor(frame, face_location)
             face_descriptor = face_rec.compute_face_descriptor(frame, face_encoding, 1)
-            # Save encoding in a numpy file
             np.save("face_encodings/" + person_name, np.array(face_descriptor))
     else:
-        print("Either no face or more then one face detected. Please check the image file again")
+        print("No face or more then one face detected. Please check the image file")
 
 
 def main():
+    """
+    Save new face
+
+    :return:
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--file", type=str, help="File for to extract face from it", required=True)
     parser.add_argument("-n", "--name", type=str, help="Name for the person", required=True)

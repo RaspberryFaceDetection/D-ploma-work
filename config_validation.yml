@@ -1,0 +1,41 @@
+MOTION_SENSOR_PIN:
+  type: integer
+  nullable: true
+  min: 1
+
+FACE_LANDMARK_THRESHOLD:
+  type: float
+  required: true
+  min: 0.0
+  max: 1.0
+
+SECONDS_TO_CAPTURE_FRAMES:
+  type: integer
+  required: true
+  min: 1
+
+PICTURE_HIGH_RESOLUTION:
+  type: integer
+  required: true
+
+PICTURE_WIDTH_RESOLUTION:
+  type: integer
+  required: true
+
+SFTP_HOST:
+  type: string
+  required: true
+
+SFTP_PORT:
+  type: integer
+  required: false
+  default: 22
+
+SFTP_USER:
+  type: string
+  required: true
+
+SFTP_PASSWORD:
+  type: string
+  required: true
+
