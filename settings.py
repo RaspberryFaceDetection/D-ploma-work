@@ -9,18 +9,22 @@ class Settings:
     """
     Settings class
     """
-    CONFIG = None
-    CONFIGURATION_FILE_NAME = 'conf.ini'
-    CONFIGURATION_VALIDATION_FILE_NAME = 'config_validation.yml'
 
-    def __init__(self, file_name=f'{os.path.dirname(os.path.abspath(__file__))}/{CONFIGURATION_FILE_NAME}'):
+    CONFIG = None
+    CONFIGURATION_FILE_NAME = "conf.ini"
+    CONFIGURATION_VALIDATION_FILE_NAME = "config_validation.yml"
+
+    def __init__(
+        self,
+        file_name=f"{os.path.dirname(os.path.abspath(__file__))}/{CONFIGURATION_FILE_NAME}",
+    ):
         """
         Initialize config
         """
         self.read_ini_file(file_name)
         self.validate_ini_file()
 
-    def read_ini_file(self, file_name, config_group='face_recognition'):
+    def read_ini_file(self, file_name, config_group="face_recognition"):
         """
         Read data from configuration file
 
@@ -28,13 +32,18 @@ class Settings:
         :param config_group: config group
         :return:
         """
-        with open(file_name, 'r') as f:
+        with open(file_name, "r") as f:
             config_string = f.read()
 
         config = localconfig.LocalConfig()
         config.read(config_string)
 
-        params = AttrDict({str(key).upper(): value for key, value in getattr(config, config_group) or {}})
+        params = AttrDict(
+            {
+                str(key).upper(): value
+                for key, value in getattr(config, config_group) or {}
+            }
+        )
 
         self.CONFIG = params
 
@@ -48,7 +57,7 @@ class Settings:
             with open(self.CONFIGURATION_VALIDATION_FILE_NAME) as file:
                 schema = yaml.load(file.read(), Loader=yaml.Loader)
         except FileNotFoundError:
-            raise Exception(f'{self.CONFIGURATION_VALIDATION_FILE_NAME} not found')
+            raise Exception(f"{self.CONFIGURATION_VALIDATION_FILE_NAME} not found")
 
         try:
             validator = cerberus.Validator(schema)
