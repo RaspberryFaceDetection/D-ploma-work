@@ -8,15 +8,14 @@ import time
 import requests
 from gpiozero import MotionSensor
 
+from send_image import send_image_to_telegram
 from settings import settings
 
-pir = MotionSensor(settings.CONFIG['MOTION_SENSOR_PIN'])
 detect_faces = cv2.CascadeClassifier(settings.CONFIG["CASCADE_CLASSIFIER"])
 predictor = dlib.shape_predictor(settings.CONFIG["SHAPE_PREDICTOR"])
 face_rec = dlib.face_recognition_model_v1(settings.CONFIG["FACE_RECOGNITION_MODEL"])
 
-def send_to_telegram(a, b):
-    pass
+pir = MotionSensor(settings.CONFIG["MOTION_SENSOR_PIN"])
 
 
 def motion_detected() -> bool:
@@ -28,16 +27,18 @@ def motion_detected() -> bool:
 
     while True:
         pir.wait_for_motion()
-        return True
 
 
 def detect_online(frame):
     url = f"http://{settings.CONFIG['INSTANCE_HOST']}:{settings.CONFIG['INSTANCE_PORT']}/get-recognition"
-    file_name = f"verify_{time.strftime('%Y.%m.%d %H:%M:%S')}.jpg"
+    identification_time = time.strftime("%Y.%m.%d %H:%M:%S")
+    file_name = f"verify_{identification_time}.jpg"
     cv2.imwrite(file_name, frame)
     files = {"file": (file_name, open(file_name, "rb"))}
     r = requests.post(url, files=files, timeout=5)
-    return r.text
+    name = r.text
+    send_image_to_telegram(open(file_name, "rb"), name, identification_time)
+    return name
 
 
 def detect_offline(frame, saved_face_descriptor, names):
@@ -84,16 +85,13 @@ def detect(video_capture, saved_face_descriptor, names):
     while (time.time() - start_time) <= seconds_to_capture_frames:
         # Grab a single frame from WebCam
         ret, frame = video_capture.read()
-        send_message = False
 
         try:
-            name = detect_online(frame)
-            send_message = True
+            detect_online(frame)
         except (requests.ConnectionError, requests.Timeout):
             name = detect_offline(frame, saved_face_descriptor, names)
-
-        if send_message:
-            send_to_telegram(name, frame)
+            file_name = f"{name}_{time.strftime('%Y.%m.%d %H:%M:%S')}.jpg"
+            cv2.imwrite(f"faces/{file_name}", frame)
 
         time.sleep(seconds_to_capture_frames)
 
@@ -121,14 +119,7 @@ def main():
 
     while True:
         if motion_detected():
-            detect(
-                video_capture,
-                saved_face_descriptor,
-                names,
-                detect_faces,
-                predictor,
-                face_rec,
-            )
+            detect(video_capture, saved_face_descriptor, names)
 
     video_capture.release()
 

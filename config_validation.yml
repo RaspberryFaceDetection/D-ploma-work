@@ -49,3 +49,11 @@ INSTANCE_HOST:
 INSTANCE_PORT:
   type: integer
   required: true
+
+TELEGRAM_TOKEN:
+  type: string
+  required: true
+
+TELEGRAM_CHAT:
+  type: integer
+  required: true
